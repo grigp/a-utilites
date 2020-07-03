@@ -1,0 +1,157 @@
+QGroupBox
+{
+    background-color: rgb(255, 255, 255);
+    font-size: 11pt;
+    color: rgb(32,88,103);
+}
+
+QFrame
+{
+    background-color: rgb(255, 255, 255);
+    font-size: 11pt;
+    color: rgb(32,88,103);
+}
+
+QFrame#frTitle
+{
+    background-color: rgb(22, 59, 102);
+}
+
+QPushButton#btnStart,
+QPushButton#btnPause,
+QPushButton#btnReset,
+QPushButton#btnSettings,
+QPushButton#btnStartConnect,
+QPushButton#btnSaveLog,
+QPushButton#btnSaveConfig,
+QPushButton#btnRestoreConfig,
+QPushButton#btnSelectAll,
+QPushButton#btnUnSelectAll
+{
+    border: 2px solid #8f8f91;
+    border-radius: 6px;
+    background-color: rgb(22, 59, 102);
+    color: rgb(255, 255, 255);
+    min-width: 90px;
+}
+
+QPushButton#btnStart:hover,
+QPushButton#btnPause:hover,
+QPushButton#btnReset:hover,
+QPushButton#btnSettings:hover,
+QPushButton#btnStartConnect:hover,
+QPushButton#btnSaveLog:hover,
+QPushButton#btnSaveConfig:hover,
+QPushButton#btnRestoreConfig:hover,
+QPushButton#btnSelectAll:hover,
+QPushButton#btnUnSelectAll:hover
+{
+    background-color: rgb(44, 118, 204);
+}
+
+QPushButton#btnStart:pressed,
+QPushButton#btnPause:pressed,
+QPushButton#btnReset:pressed,
+QPushButton#btnSettings:pressed,
+QPushButton#btnStartConnect:pressed,
+QPushButton#btnSaveLog:pressed,
+QPushButton#btnSaveConfig:pressed,
+QPushButton#btnRestoreConfig:pressed,
+QPushButton#btnSelectAll:pressed,
+QPushButton#btnUnSelectAll:pressed
+{
+    background-color: rgb(11, 29, 51);
+}
+
+QPushButton#btnSettings,
+QPushButton#btnStartConnect,
+QPushButton#btnSaveLog,
+QPushButton#btnSaveConfig,
+QPushButton#btnRestoreConfig
+{
+    min-width: 190px;
+}
+
+QPushButton#btnSelectAll,
+QPushButton#btnUnSelectAll
+{
+    min-width: 145px;
+}
+
+/*QSlider
+{
+    background: rgb(22, 59, 102);
+}*/
+
+QSlider::groove:vertical
+{
+    background: red;
+    position: absolute; /* absolutely position 4px from the left and right of the widget. setting margins on the widget should work too... */
+    left: 4px; right: 4px;
+}
+
+QSlider::handle:vertical
+{
+    background: white;
+    border: 1px solid rgb(22, 59, 102);
+    width: 17px;
+    height: 17px;
+    margin: -5px -4px;
+    border-radius: 8px;
+}
+
+QSlider::handle:vertical:hover
+{
+    background: rgb(230, 230, 230);
+}
+
+QSlider::handle:vertical:pressed
+{
+    background: rgb(200, 200, 200);
+}
+
+QSlider::add-page:vertical
+{
+    background: rgb(150, 0, 0);
+}
+
+QSlider::sub-page:vertical
+{
+    background: rgb(22, 59, 102);
+}
+
+QCheckBox::indicator
+{
+    border: 1px solid rgb(22, 59, 102);
+    border-radius: 8px;
+}
+
+QCheckBox::indicator:unchecked
+{
+    background: rgb(255, 255, 255);
+}
+
+QCheckBox::indicator:unchecked:hover
+{
+    background: rgb(230, 230, 230);
+}
+
+QCheckBox::indicator:unchecked:pressed
+{
+    background: rgb(180, 180, 180);
+}
+
+QCheckBox::indicator:checked
+{
+    background: rgb(0, 0, 255);
+}
+
+QCheckBox::indicator:checked:hover
+{
+    background: rgb(0, 100, 255);
+}
+
+QCheckBox::indicator:checked:pressed
+{
+    background: rgb(0, 150, 255);
+}

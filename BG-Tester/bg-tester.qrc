@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/add.png</file>
+        <file>images/play.png</file>
+        <file>images/save.png</file>
+        <file>images/stop.png</file>
+        <file>images/clear.png</file>
+        <file>images/settings.png</file>
+        <file>images/cfg_open.png</file>
+        <file>images/cfg_save.png</file>
+        <file>qss/main.qss</file>
+        <file>images/Logo.png</file>
+        <file>images/Logo1.png</file>
+        <file>images/Logo_Crosses.png</file>
+        <file>images/Icon128.ico</file>
+    </qresource>
+</RCC>
