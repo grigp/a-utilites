@@ -320,7 +320,8 @@ void MainWindow::getCodeUnique(DataDefines::CodeUniqueData data)
 
 void MainWindow::getBatteryLevel(DataDefines::BatteryLevelData data)
 {
-    int perc = round(1.82 * data.level - 324);
+//    int perc = round(1.82 * data.level - 324);
+    int perc = round(data.level * 100 / 80.0);
     int persent = perc;
     if (persent > 100)
         persent = 100;

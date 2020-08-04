@@ -30,7 +30,7 @@ void Driver::start()
         connect(m_port, &SerialPort::outPortD, this, &Driver::on_readData);
         connect(this, &Driver::writeData, m_port, &SerialPort::WriteToPort);
 
-        m_tmCommError = startTimer(1000);
+        m_tmCommError = startTimer(3000);
 
         auto sps = getSerialPortSettings();
         emit portSettings(SerialPortDefines::serialPortName(m_portName),
@@ -38,40 +38,35 @@ void Driver::start()
         emit connectPort();
 
         m_trdInput->start();
+
+        startSendDataMode();
     }
 }
 
 void Driver::stop()
 {
+    stopSendDataMode();
     emit disconnectPort();
-
 }
 
 void Driver::setPower(const quint8 channel, const quint8 power)
 {
+    quint8 b1 = 0x80 + (ccPower << 4) + channel;
+    quint8 b2 = power;
+
     QByteArray cmd;
     cmd.resize(1);
-    cmd[0] = MarkerCode;
+    cmd[0] = b1;
     emit writeData(cmd);
 
     delay(m_delaySendByte);
 
-    cmd[0] = channel;
+    cmd[0] = b2;
     emit writeData(cmd);
 
     delay(m_delaySendByte);
 
-    cmd[0] = power;
-    emit writeData(cmd);
-
-    delay(m_delaySendByte);
-
-//    QByteArray cmd;
-//    cmd.resize(3);
-//    cmd[0] = MarkerCode;
-//    cmd[1] = channel;
-//    cmd[2] = power;
-//    emit writeData(cmd);
+//    qDebug() << "- set power" << channel << power;
 }
 
 void Driver::setMode(const DataDefines::Frequency freq, const DataDefines::Modulation modulation, const bool pause, const bool reserve)
@@ -88,12 +83,8 @@ void Driver::setMode(const DataDefines::Frequency freq, const DataDefines::Modul
 
     QByteArray cmd;
     cmd.resize(1);
-    cmd[0] = MarkerCode;
-    emit writeData(cmd);
-
-    delay(m_delaySendByte);
-
-    cmd[0] = ccMode;
+    quint8 b1 = 0x80 + (ccMode << 4) + cpMode;
+    cmd[0] = b1;
     emit writeData(cmd);
 
     delay(m_delaySendByte);
@@ -104,12 +95,7 @@ void Driver::setMode(const DataDefines::Frequency freq, const DataDefines::Modul
     delay(m_delaySendByte);
 
 
-//    QByteArray cmd;
-//    cmd.resize(3);
-//    cmd[0] = MarkerCode;
-//    cmd[1] = ccMode;
-//    cmd[2] = val;
-//    emit writeData(cmd);
+//    qDebug() << "- set mode" << freq << modulation << QString::number(b1, 16) << QString::number(val, 16);
 }
 
 void Driver::on_readData(const QByteArray data)
@@ -153,25 +139,51 @@ void Driver::timerEvent(QTimerEvent *event)
     }
 }
 
+void Driver::startSendDataMode()
+{
+    QByteArray cmd;
+    cmd.resize(1);
+    quint8 b = 0x80 + (ccStart << 4) + cpStart;
+    cmd[0] = b;
+    emit writeData(cmd);
+    delay(m_delaySendByte);
+
+    cmd[0] = cpStart;
+    emit writeData(cmd);
+    delay(m_delaySendByte);
+}
+
+void Driver::stopSendDataMode()
+{
+    QByteArray cmd;
+    cmd.resize(1);
+    quint8 b = 0x80 + (ccStop << 4) + cpStop;
+    cmd[0] = b;
+    emit writeData(cmd);
+    delay(m_delaySendByte);
+}
+
 void Driver::assignByteFromDevice(quint8 b)
 {
     if (!m_isSynchro)
     {
-        if (b == MarkerCode)
+        if ((b & 0x80) != 0)
         {
             m_isSynchro = true;
             m_byteCounter = 0;
+            m_byte1 = b;
         }
     }
     else
     {
         ++m_byteCounter;
-        if (m_byteCounter == 1)
-            m_command = b;
-        else
-        if (m_byteCounter == 2)
+        if (m_byteCounter == 1 && ((b & 0x80) == 0))
         {
-            m_data = b;
+            m_byte2 = b;
+            m_command = (m_byte1 & 0x70) >> 4;
+            m_param = m_byte1 & 0x0F;
+            m_data = m_byte2 & 0x7F;
+
             m_isSynchro = false;
             m_byteCounter = 0;
 
@@ -184,15 +196,15 @@ void Driver::assignByteFromDevice(quint8 b)
 
 void Driver::commandWorking()
 {
-    if (m_command >= ccPower1 && m_command <= ccPower12)
+    if (m_command == ccPowerDevice && m_param >= cpPower1 && m_param <= cpPower12)
     {
         DataDefines::PowerData pd;
-        pd.channel = m_command;
+        pd.channel = m_param;
         pd.power = m_data;
         emit sendPower(pd);
     }
     else
-    if (m_command == ccMode)
+    if (m_command == ccModeDevice && m_param == cpMode)
     {
         DataDefines::ModeData md;
 
@@ -214,12 +226,12 @@ void Driver::commandWorking()
         emit sendMode(md);
     }
     else
-    if (m_command == ccCodeUniqueLo)
+    if (m_command == ccCodeUniqueLo && m_param == cpCodeUniqueLo)
     {
         m_codeLo = m_data;
     }
     else
-    if (m_command == ccCodeUniqueHi)
+    if (m_command == ccCodeUniqueHi && m_param == cpCodeUniqueHi)
     {
         m_codeHi = m_data;
 
@@ -227,7 +239,7 @@ void Driver::commandWorking()
         cud.code = m_codeHi * 265 + m_codeLo;
         emit sendCodeUnique(cud);
     }
-    if (m_command == ccBatteryLevel)
+    if (m_command == ccBatteryLevel && m_param == cpBatteryLevel)
     {
         DataDefines::BatteryLevelData bld;
         bld.level = m_data;

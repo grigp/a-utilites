@@ -91,22 +91,39 @@ private:
     const quint8 MarkerCode = 253;
     enum CommandCode
     {
-          ccPower1 = 1
-        , ccPower2 = 2
-        , ccPower3 = 3
-        , ccPower4 = 4
-        , ccPower5 = 5
-        , ccPower6 = 6
-        , ccPower7 = 7
-        , ccPower8 = 8
-        , ccPower9 = 9
-        , ccPower10 = 10
-        , ccPower11 = 11
-        , ccPower12 = 12
-        , ccMode    = 13
-        , ccCodeUniqueLo = 14
-        , ccCodeUniqueHi = 15
-        , ccBatteryLevel = 16
+          ccPower = 1
+        , ccMode = 2
+        , ccReset = 3
+        , ccStart = 3
+        , ccStop = 3
+        , ccBatteryLevel = 4
+        , ccCodeUniqueLo = 5
+        , ccCodeUniqueHi = 6
+        , ccPowerDevice = 7
+        , ccModeDevice = 7
+    };
+
+    enum CommandParam
+    {
+          cpPower1 = 1
+        , cpPower2 = 2
+        , cpPower3 = 3
+        , cpPower4 = 4
+        , cpPower5 = 5
+        , cpPower6 = 6
+        , cpPower7 = 7
+        , cpPower8 = 8
+        , cpPower9 = 9
+        , cpPower10 = 10
+        , cpPower11 = 11
+        , cpPower12 = 12
+        , cpMode    = 13
+        , cpReset = 14
+        , cpStart = 13
+        , cpStop = 12
+        , cpBatteryLevel = 15
+        , cpCodeUniqueLo = 0
+        , cpCodeUniqueHi = 1
     };
 
     QMap<int, DataDefines::Modulation> m_modulationByCode {
@@ -120,6 +137,8 @@ private:
       , std::pair<int, DataDefines::Frequency> (8, DataDefines::freq15Hz)
     };
 
+    void startSendDataMode();
+    void stopSendDataMode();
 
     /*!
      * \brief Обрабатывает принятый байт из пакета данных байт
@@ -145,15 +164,18 @@ private:
 
     bool m_isSynchro {false};      ///< Синхронизированы ли мы
     int m_byteCounter {0};         ///< Счетчик байтов
+    quint8 m_byte1 {0};            ///< Первый байт команды
+    quint8 m_byte2 {0};            ///< Второй байт команды
     quint8 m_command {0};          ///< Команда
-    quint8 m_data {0};             ///< Байт данных
+    quint8 m_param {0};            ///< Параметр команды
+    quint8 m_data {0};             ///< Данные передачи или приема
     quint8 m_codeLo {0};           ///< Младший байт уникального кода
     quint8 m_codeHi {0};           ///< Старший байт уникального кода
 
     const QString UID = "{9bfc97a3-282e-4f5a-9415-4bc8b5de8cdb}";
     const QString NAME = "Драйвер блока генерации";
 
-    int m_delaySendByte {50};
+    int m_delaySendByte {0};
 };
 
 #endif // DRIVER_H
